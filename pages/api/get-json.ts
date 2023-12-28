@@ -14,14 +14,14 @@ export default async function handler(
   res: NextApiResponse
 ): Promise<void> {
   try {
-    const { inputData } = req.body;
-    const prompt = `The following are the possible chart types supported by the code provided: area, bar, line, composed, scatter, pie, radar, radialBar, treemap, and funnel. Given the user input: ${inputData}, identify the chart type the user wants to display. Return just one word
-`;
+    const { inputData, chart } = req.body;
+    const prompt = `Based on ${inputData} generate a valid JSON in which each element is an object for Recharts API for chart ${chart} without new line characters '\n'. Strictly using this FORMAT and naming:
+[{ "name": "a", "value": 12 }]. Make sure field name always stays named name. Instead of naming value field value in JSON, name it based on user metric and make it the same across every item.\n Make sure the format use double quotes and property names are string literals. Provide JSON data only. `;
 
-    // Initialize the Bard
     const API_KEY = process.env.BARD_KEY;
     const url = `https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key=${API_KEY}`;
-    const chartType = await fetch(url, {
+
+    const json = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,18 +37,7 @@ export default async function handler(
           throw new Error('Invalid response data');
         }
       });
-
-    if (
-      !chartType ||
-      chartType.includes('AI-model') ||
-      chartType.includes('programmed') ||
-      chartType.includes('model') ||
-      chartType.includes('AI')
-    ) {
-      throw new Error('Failed to generate output data');
-    }
-
-    res.status(200).json(chartType);
+    res.status(200).send(json);
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');

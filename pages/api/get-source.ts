@@ -15,13 +15,11 @@ export default async function handler(
 ): Promise<void> {
   try {
     const { inputData } = req.body;
-    const prompt = `The following are the possible chart types supported by the code provided: area, bar, line, composed, scatter, pie, radar, radialBar, treemap, and funnel. Given the user input: ${inputData}, identify the chart type the user wants to display. Return just one word
-`;
+    const prompt = `Given the following text "${inputData}", identify and extract the data source. Follow the format "Data source: {data source}". Please provide the source name and do not add any additional words, keep it short.`;
 
-    // Initialize the Bard
     const API_KEY = process.env.BARD_KEY;
     const url = `https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key=${API_KEY}`;
-    const chartType = await fetch(url, {
+    const source = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -38,17 +36,7 @@ export default async function handler(
         }
       });
 
-    if (
-      !chartType ||
-      chartType.includes('AI-model') ||
-      chartType.includes('programmed') ||
-      chartType.includes('model') ||
-      chartType.includes('AI')
-    ) {
-      throw new Error('Failed to generate output data');
-    }
-
-    res.status(200).json(chartType);
+    res.status(200).send(source);
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');

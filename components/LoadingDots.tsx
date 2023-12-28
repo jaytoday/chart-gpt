@@ -1,19 +1,15 @@
-import React from "react";
-import styles from "../styles/loading-dots.module.css";
+import { Ripples } from '@uiball/loaders';
 
-const LoadingDots = ({
-  color = "#000",
-  style = "small",
-}: {
-  color: string;
-  style?: string;
-}) => {
+const LoadingDots = () => {
   return (
-    <span className={style == "small" ? styles.loading2 : styles.loading}>
-      <span style={{ backgroundColor: color }} />
-      <span style={{ backgroundColor: color }} />
-      <span style={{ backgroundColor: color }} />
-    </span>
+    <div className="flex items-center justify-center mx-auto">
+      <span className="shrink-0">
+        <Ripples size={45} speed={2} color="#3b82f6" />
+      </span>
+      <span className="ml-2 text-zinc-900 dark:text-zinc-100">
+        Hang on, finding our artistic inspiration
+      </span>
+    </div>
   );
 };
 
